@@ -1,7 +1,6 @@
 #include "DxLib.h"
 #include "Player.h"
 
-#ifndef _ROGEBREAZ_TEST
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
@@ -10,7 +9,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	if (DxLib_Init() == -1) { return -1; }
 	SetDrawScreen(DX_SCREEN_BACK); // ï`âÊêÊâÊñ Çó†âÊñ Ç…ÉZÉbÉg
 
-	Player player(0, 0);
+	Player player(100, 100);
 
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
@@ -32,4 +31,3 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	DxLib_End();
 	return 0;
 }
-#endif
