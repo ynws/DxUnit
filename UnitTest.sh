@@ -25,4 +25,4 @@ echo "##########################################################################
 echo "## test"
 echo "################################################################################"
 ./test --gtest_output=xml:testresult.xml
-gcovr -r ~/workspace/DxUnit/MainLib --xml --output=Coverage.xml .
+gcovr -r ~/workspace/DxUnit/MainLib -e ../UnitTest/ --xml --output=Coverage.xml .
