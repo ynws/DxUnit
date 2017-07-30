@@ -1,5 +1,5 @@
 #include "DxLib.h"
-#include "Player.h"
+#include "PlayerView.h"
 #include "DxlibIO.h"
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -12,15 +12,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	DxlibIO io;
 	Player player(10, 10);
+	PlayerView view(&io, &player);
 
 	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
 	{
 		int key = io.GetCursorInput(DX_INPUT_KEY_PAD1);
 		player.move(key);
-
 		ClearDrawScreen();
-
-		io.DrawCircle(player.getx() * 3, player.gety() * 3, 10, GetColor(255,255,255), TRUE);
+		view.Draw();
 
 		ScreenFlip();
 	}
