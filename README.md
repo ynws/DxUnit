@@ -1,16 +1,18 @@
 # DxUnit
-DxLib + UnitTest�̊���{�ݒ�
-�ȑO��������̂��o�[�W�����A�b�v�œ����Ȃ��Ȃ����̂ō�蒼��
+DxLib + UnitTestの環境基本設定
+以前作ったものがバージョンアップで動かなくなったので作り直し
 
-## �O��
-jenkins�T�[�o�ɂ�  
+## 前提
+jenkinsサーバには  
 https://github.com/ynws/jenkinsCCI  
-���g�p���Ă���
+を使用している
 
-## �ʐݒ�
-���̃��|�W�g�����x�[�X�ɐV�K�ɍ쐬����ꍇ�A�r���h�V�F���̏C�����K�v
+VisualStudioにGoogleTestAdapterを導入済み
 
-UnitTest.sh�̈ȉ��̍s��DxUnit�𐳂������|�W�g�����ɏ���������
+## 個別設定
+このリポジトリをベースに新規に作成する場合、ビルドシェルの修正が必要
+
+UnitTest.shの以下の行のDxUnitを正しいリポジトリ名に書き換える
 
 ```
 cd /var/jenkins_home/workspace/DxUnit/
@@ -18,46 +20,56 @@ cd /var/jenkins_home/workspace/DxUnit/
 gcovr -r ~/workspace/DxUnit/MainLib --xml --output=Coverage.xml .
 ```
 
-## jenkins�ݒ�
-* �r���h�V�F��
+## jenkins設定
+### 基本設定
+* ビルドするブランチ
+    とりあえず、全対象で。本当はmaster用と開発用で分けるべき。今回はテストなので1つで
+* SCMポーリング
+    // 2minごと
+    H/2 * * * *
+### ビルド
+* ビルドシェル
     sh UnitTest.sh
-* �J�o���b�W���|�[�g�Ώ�
-    build/Coverage.xml
-* �e�X�g���ʏW�v�Ώ�
+## ビルド後の処理
+* JUnitテスト結果の集計
     build/testresult.xml
+* Coberture カバレッジレポートの集計
+    build/Coverage.xml
+* Step Counter
+    - LIB `**/*.cpp`
+        除外: `UnitTest/*`
+    - TEST `UnitTest/*.cpp`
+* 未解決タスクの集計
+    - 集計対象 `**/*.cpp`
+    (現状あまり役に立ってないのでいらないかも。大規模になって、TODOコメント増えたら考える)
 
-## ��
-* Dxlib�T���v��������
-* �T���v�����N���X����
-* GoogleTest������
-* GoogleTest���s
-* jenkins��UnitTest
-* jenkins��coverage�\��
+## 済
+* Dxlibサンプル動かす
+* サンプルをクラス分離
+* GoogleTestを入れる
+* GoogleTest走行
+* jenkinsでUnitTest
+* jenkinsでcoverage表示
+* GitHubブランチ監視でjenkinsビルド
+    -> ポーリングで。
+* jenkinsの時間がずれているので直す
+* カバレッジ計測対象から、GoogleTestコードを除外
 
 ## TODO
-* Release�r���h
-* x64�r���h
-* GitHub�u�����`�Ď���jenkins�r���h
+* Dxlib依存部の切り出し
+    -> IO関係の処理を分離。本番ではDxlibを呼び、テストではMockを呼ぶ
 
-* Dxlib�g�p�\�[�X�̃e�X�g
-    -> �Ƃ������ADxlib�֐��g���Ă�N���X�̓e�X�g�ΏۂƂ��ׂ��Ȃ̂��H
-    ���ˑ��R�[�h�͕ʌ��ɂ܂Ƃ߂Ă�������
+### Dxlibコードの分離について
+環境依存コードは別個所にまとめておきたい
 
 + Main
-    ���ˑ��B�Ⴆ��Dxlib�g���Ƃ��A�ʂ̉摜���C�u�����g���Ƃ���
-    �����Ő؂�ւ���B�\�[�X�ʏ��Ȃ�
-    ���C�����W�b�N��MainLib�ĂԂ���
+    環境依存。例えばDxlib使うとか、別の画像ライブラリ使うとかは
+    ここで切り替える。ソース量少ない
+    メインロジックはMainLib呼ぶだけ
 + MainLib
-    �����ˑ��̃��W�b�N
+    環境無依存のロジック
+    IO関係は他クラスに任せる
 + UnitTest
-    MainLib�̃e�X�g
+    MainLibのテスト
+    IO関係はGoogleMockで
 
-### UI�������ǂ��؂�ւ���H
-* ��1
-    Lib��UI�p�֐��Q�̃C���^�[�t�F�[�X������obj��n��
-    -> �Ȃ񂩃_�T��
-* ��2
-    ������MVC�ō��
-    M = lib
-    V = dxlib
-    C = ?
